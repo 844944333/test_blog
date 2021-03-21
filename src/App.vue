@@ -1,27 +1,61 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <div>
+    <Header></Header>
+    <div :style="{height: globalHeight + 'px'}"></div>
+    <router-view></router-view>
+    <Footer></Footer>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
+import { defineComponent, ref, onUnmounted } from 'vue'
+import mitt from 'mitt'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import '@/assets/iconfong/iconfont.css'
+import Header from '@/components/Header.vue'
+import Footer from '@/components/Footer.vue'
+// 创建事件监听器
+export const emitter = mitt()
 
 export default defineComponent({
   name: 'App',
   components: {
-    HelloWorld
+    Header,
+    Footer
+  },
+  setup () {
+    // 顶部导航栏的高度
+    const globalHeight = ref()
+    // 事件监听器的回调函数
+    const callback = (headerHeight: any) => {
+      globalHeight.value = headerHeight
+    }
+    // 使用 on 将回调函数添加到监听器中
+    emitter.on('form-item-created', callback)
+    // 在组件卸载时清除事件监听器
+    onUnmounted(() => {
+      emitter.off('form-item-created', callback)
+    })
+    return {
+      globalHeight
+    }
   }
 })
 </script>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style>
+@font-face{
+  font-family: English;
+  src: url("./assets/font/JetBrainsMono-Regular.ttf");
+}
+.font {
+  font-family: English;
+}
+@font-face{
+  font-family: Title-font;
+  src: url("./assets/font/comic sans ms.ttf");
+}
+.title-font {
+  font-family: Title-font;
 }
 </style>
